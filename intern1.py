@@ -121,36 +121,3 @@ main()
 print("Finished")
 
 
-'''class AppURLopener(urllib.request.FancyURLopener):
-    version = "Mozilla/5.0"
-
-opener = AppURLopener()
-
-quote_page = "https://www.moneyam.com/shareprice/TPFZ"
-
-# query the website and return the html to the variable ‘page’
-page = opener.open(quote_page)
-# parse the html using beautiful soup and store in variable `soup`
-soup = BeautifulSoup(page, 'html.parser')
-
-# Take out the <div> of name and get its value
-
-name_box = soup.find_all('div', attrs={'class': 'ui-helper-clearfix'})
-for each in name_box:
-    name = each.text.strip().split() # strip() is used to remove starting and trailing
-    name = ''.join(name)
-    #print(name)
-    matchObj = re.match(r'.*(Bidprice\d*\.\d*)(Openprice\d*\.\d*)(Askprice\d*\.\d*)(Prevclose\d*\.\d*).*', str(name), re.M | re.I)
-    try:
-        print(matchObj.group(1), matchObj.group(2), matchObj.group(3), matchObj.group(4))
-    except:
-        pass
-        #print("qq",name,"qq")
-
-workbook = xlsxwriter.Workbook('hello.xlsx')
-worksheet = workbook.add_worksheet()
-
-worksheet.write('A1', name)
-worksheet.write('B1', datetime.now())
-
-workbook.close()# specify the url'''
