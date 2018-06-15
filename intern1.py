@@ -52,13 +52,44 @@ class WebScrapper:
             name = each.text.strip().split()  # strip() is used to remove starting and trailing
             name = ''.join(name)
             # print(name)
-            matchObj = re.match(r'.*(Bidprice\d*\.\d*)(Openprice\d*\.\d*)(Askprice\d*\.\d*)(Prevclose\d*\.\d*).*',
+            matchObj = re.match(r'.*(Bidprice)(\d*\.\d*)(Openprice)(\d*\.\d*)(Askprice)(\d*\.\d*)(Prevclose)(\d*\.\d*).*',
                                 str(name), re.M | re.I)
             try:
                 #print(matchObj.group(1), matchObj.group(2), matchObj.group(3), matchObj.group(4))
-                return matchObj.group(1), matchObj.group(2), matchObj.group(3), matchObj.group(4)
+                return matchObj.group(2), matchObj.group(4), matchObj.group(6), matchObj.group(8)
             except:
                 pass
+
+
+class excelWriter:
+    def __init__(self, fileName):
+        self.saveFile = fileName
+        self.workbook = xlsxwriter.Workbook(self.saveFile)
+        self.worksheet = self.workbook.add_worksheet()
+        self.worksheet.write('A1', "Name")
+        self.worksheet.write('B1', "Epic")
+        self.worksheet.write('C1', "Price")
+        self.worksheet.write('D1', "Bid price")
+        self.worksheet.write('E1', "Open price")
+        self.worksheet.write('F1', "Ask price")
+        self.worksheet.write('G1', "prevClose price")
+        self.currentRowCounter = 2
+
+    def writeIntoFile(self, content):
+        for eachEntry in content:
+            self.worksheet.write('A'+str(self.currentRowCounter), str(eachEntry[0]))
+            self.worksheet.write('B'+str(self.currentRowCounter), str(eachEntry[1]))
+            self.worksheet.write('C'+str(self.currentRowCounter), str(eachEntry[2]))
+            self.worksheet.write('D'+str(self.currentRowCounter), str(eachEntry[3]))
+            self.worksheet.write('E'+str(self.currentRowCounter), str(eachEntry[4]))
+            self.worksheet.write('F'+str(self.currentRowCounter), str(eachEntry[5]))
+            self.worksheet.write('G'+str(self.currentRowCounter), str(eachEntry[6]))
+            self.currentRowCounter += 1
+
+    def closeExcel(self):
+        self.workbook.close()
+
+
 
 
 def main():
@@ -70,27 +101,21 @@ def main():
     count = 1
     for eachLink in links:
         try:
-            if(count != 43):
-                tags = webObj.findTags(eachLink[1], 'div', {'class': 'ui-helper-clearfix'})
-                bid, open, ask, prev = webObj.scrapeLink(tags)
-                currentData = [eachLink[0][0], eachLink[0][1], eachLink[0][2], bid, open, ask, prev]
-                dataList.append(currentData)
-                print(currentData)
-                print(count)
+            tags = webObj.findTags(eachLink[1], 'div', {'class': 'ui-helper-clearfix'})
+            bid, open, ask, prev = webObj.scrapeLink(tags)
+            currentData = [eachLink[0][0], eachLink[0][1], eachLink[0][2], bid, open, ask, prev]
+            dataList.append(currentData)
+            print(currentData)
             count+=1
+
         except:
             print("error at", count)
 
+    excel = excelWriter("finalExcelFile.xlsx")
+    excel.writeIntoFile(dataList)
+    excel.closeExcel()
 
-
-class excelWriter:
-    def __init__(self, fileName):
-        self.saveFile = fileName
-
-    def writeIntoFile(self, content):
-        pass
-
-
+    print(count)
 
 main()
 print("Finished")
